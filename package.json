@@ -1,0 +1,31 @@
+{
+  "name": "firebase-collections",
+  "version": "0.1.0",
+  "description": "Basic ORM for Firebase",
+  "main": "lib/index.js",
+  "author": "Sebastian Garrido",
+  "license": "MIT",
+  "jest": {
+    "testEnvironment": "node"
+  },
+  "scripts": {
+    "build": "babel src --out-dir lib",
+    "prepublishOnly": "npm run build",
+    "test": "jest"
+  },
+  "dependencies": {
+    "case": "^1.5.4",
+    "pluralize": "^7.0.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.26.0",
+    "babel-plugin-transform-es2015-modules-commonjs": "^6.26.0",
+    "babel-plugin-transform-strict-mode": "^6.24.1",
+    "babel-preset-es2017": "^6.24.1",
+    "babel-preset-stage-2": "^6.24.1",
+    "firebase-admin-mock": "^0.0.8",
+    "jest": "^20.0.4",
+    "standard": "^10.0.3",
+    "supertest": "^3.0.0"
+  }
+}
