@@ -31,12 +31,13 @@ module.exports = class Relationship {
       keys.push(child.key);
     });
 
-    return Promise.all(keys.map(this._RecipientCollection.find));
+    const entityJobs = keys.map(id => this._RecipientCollection.find(id));
+    return Promise.all(entityJobs);
   }
 
   find = async (id) => {
     const isRelated = await this._admin.database()
-      .ref(`${this._tableName}/${this._target.id}`)
+      .ref(`${this._tableName}/${this._target.id}/${id}`)
       .once('value')
       .then(snapshot => snapshot.val());
 
