@@ -1,4 +1,4 @@
 'use strict';
 
-exports.Collection = require('./collection');
-exports.registerCollections = require('./register-collections');
+module.exports.Collection = require('./collection');
+module.exports.registerCollections = require('./register-collections');

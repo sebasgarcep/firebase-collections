@@ -1,11 +1,12 @@
 'use strict';
 
 module.exports = class Relationship {
-  constructor (target, ParentCollection, RecipientCollection, relationshipName = null) {
+  constructor(target, ParentCollection, RecipientCollection, relationshipName = null) {
     this._admin = ParentCollection._internal.admin;
     this._target = target;
+    this._RecipientCollection = RecipientCollection;
     this._tableName = relationshipName ||
-      `${ParentCollection._internal.pluralStoreName}${RecipientCollection._internal.pluralModelName}`
+      `${ParentCollection._internal.pluralStoreName}${RecipientCollection._internal.pluralModelName}`;
   }
 
   associate = async (instance) => {
@@ -30,6 +31,6 @@ module.exports = class Relationship {
       keys.push(child.key);
     });
 
-    return Promise.all(keys.map(RecipientCollection.find));
+    return Promise.all(keys.map(this._RecipientCollection.find));
   }
 };

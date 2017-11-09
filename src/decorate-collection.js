@@ -1,7 +1,13 @@
 'use strict';
 
+/* eslint-disable no-param-reassign */
+
+const utilcase = require('case');
+const pluralize = require('pluralize');
+
 module.exports = (app, Collection, _prefix = '') => {
-  const internal = Collection._internal = {};
+  const internal = {};
+  Collection._internal = internal;
 
   // firebase instances
   internal.app = app;

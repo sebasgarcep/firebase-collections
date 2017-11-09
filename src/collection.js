@@ -1,7 +1,8 @@
 'use strict';
 
-const utilcase = require('case');
-const pluralize = require('pluralize');
+/* eslint-disable no-restricted-syntax */
+/* eslint-disable no-param-reassign */
+/* eslint-disable guard-for-in */
 
 const Relationship = require('./relationship');
 const decorateCollection = require('./decorate-collection');
@@ -26,10 +27,12 @@ const proxyHandler = {
 
   set: (target, name, value) => {
     if (name === '_data') {
-      return target[name] = value;
+      target[name] = value;
+    } else {
+      target._data[name] = value;
     }
 
-    return target._data[name] = value;
+    return value;
   },
 };
 
@@ -49,7 +52,7 @@ module.exports = class Collection {
 
       if (shouldPrefix) {
         value._prefix = subprefix;
-      } else if (Collection.isPrototypeOf(value)) {
+      } else if (Object.isPrototypeOf.call(Collection, value)) {
         decorateCollection(this._internal.app, value, subprefix);
       }
     }
@@ -91,9 +94,10 @@ module.exports = class Collection {
   }
 
   delete = async () => {
-    if (!this.id) return;
-    const ParentCollection = this.constructor;
-    await ParentCollection.getReferenceById(this.id, this._prefix).set(null);
+    if (this.id) {
+      const ParentCollection = this.constructor;
+      await ParentCollection.getReferenceById(this.id, this._prefix).set(null);
+    }
     return this;
   }
 
@@ -113,7 +117,12 @@ module.exports = class Collection {
   relatesTo = (collectionName, relationshipName) => {
     const ParentCollection = this.constructor;
     const RecipientCollection = this._internal.app.collections[collectionName];
-    const relationship = new Relationship(this, ParentCollection, RecipientCollection, relationshipName);
+    const relationship = new Relationship(
+      this,
+      ParentCollection,
+      RecipientCollection,
+      relationshipName,
+    );
     return () => relationship;
   }
 

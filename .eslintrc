@@ -4,7 +4,7 @@
       "flowtype"
     ],
     "parserOptions": {
-      "sourceType": "module"
+      "sourceType": "script"
     },
     "rules": {
       "arrow-body-style": "off",
