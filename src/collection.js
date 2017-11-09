@@ -57,7 +57,9 @@ module.exports = class Collection {
       }
     }
 
-    return new Proxy(this, proxyHandler);
+    this._proxy = new Proxy(this, proxyHandler);
+
+    return this._proxy;
   }
 
   fromDataSnapshot = (snapshot) => {
@@ -67,38 +69,40 @@ module.exports = class Collection {
   fill = (data) => {
     this._data = {};
     this.merge(data);
-    return this;
+    return this._proxy;
   }
 
   merge = (data) => {
-    Object.assign(this, data);
-    return this;
+    Object.assign(this._proxy, data);
+    return this._proxy;
   }
 
   save = async () => {
     const ParentCollection = this.constructor;
 
-    if (!this.id) {
-      this.id = ParentCollection.getReference(this._prefix).push().key;
+    if (!this._proxy.id) {
+      this._proxy.id = ParentCollection.getReference(this._proxy._prefix).push().key;
     }
 
-    if (!this.createdAt) {
-      this.createdAt = (new Date()).getTime();
+    if (!this._proxy.createdAt) {
+      this._proxy.createdAt = (new Date()).getTime();
     }
 
-    this.updatedAt = (new Date()).getTime();
+    this._proxy.updatedAt = (new Date()).getTime();
 
-    await ParentCollection.getReferenceById(this.id, this._prefix).update(this._data);
+    const data = this._proxy.toJSON();
+    await ParentCollection.getReferenceById(this._proxy.id, this._proxy._prefix)
+      .update(data);
 
-    return this;
+    return this._proxy;
   }
 
   delete = async () => {
-    if (this.id) {
+    if (this._proxy.id) {
       const ParentCollection = this.constructor;
-      await ParentCollection.getReferenceById(this.id, this._prefix).set(null);
+      await ParentCollection.getReferenceById(this._proxy.id, this._proxy._prefix).set(null);
     }
-    return this;
+    return this._proxy;
   }
 
   hasOne = (collectionName) => {
@@ -118,7 +122,7 @@ module.exports = class Collection {
     const ParentCollection = this.constructor;
     const RecipientCollection = this._internal.app.collections[collectionName];
     const relationship = new Relationship(
-      this,
+      this._proxy,
       ParentCollection,
       RecipientCollection,
       relationshipName,
@@ -127,6 +131,6 @@ module.exports = class Collection {
   }
 
   toJSON = () => {
-    return this._data;
+    return this._proxy._data;
   }
 };
