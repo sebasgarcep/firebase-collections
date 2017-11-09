@@ -16,6 +16,10 @@ describe('firebase deep updates testing suite', () => {
       projects = this.hasMany('Project')
       friends = this.relatesTo('User', 'friends')
       posts = this.relatesTo('Post')
+
+      static fromDataSnapshot = (snapshot) => {
+        return snapshot.val();
+      }
     }
 
     const plugin = registerCollections({

@@ -5,6 +5,10 @@
 const utilcase = require('case');
 const pluralize = require('pluralize');
 
+const defaultFromDataSnapshot = (snapshot) => {
+  return snapshot.val();
+};
+
 module.exports = (app, Collection, _prefix = '') => {
   const internal = {};
   Collection._internal = internal;
@@ -22,6 +26,8 @@ module.exports = (app, Collection, _prefix = '') => {
   internal.pluralStoreName = pluralize(internal.storeName);
 
   // collection static methods
+  Collection.fromDataSnapshot = Collection.fromDataSnapshot || defaultFromDataSnapshot;
+
   Collection.getReference = (prefix = _prefix) => {
     return internal.admin.database().ref(`${prefix}/${internal.pluralStoreName}`);
   };
@@ -34,7 +40,7 @@ module.exports = (app, Collection, _prefix = '') => {
     let instance = null;
 
     const ref = Collection.getReferenceById(id, prefix);
-    const data = await ref.once('value').then(instance.fromDataSnapshot);
+    const data = await ref.once('value').then(Collection.fromDataSnapshot);
 
     if (data !== null) {
       instance = new Collection();
@@ -55,7 +61,7 @@ module.exports = (app, Collection, _prefix = '') => {
 
     const snapshot = await ref.once('value');
     snapshot.forEach((child) => {
-      const data = instance.fromDataSnapshot(child);
+      const data = Collection.fromDataSnapshot(child);
 
       if (data !== null) {
         instance = new Collection();
@@ -86,7 +92,7 @@ module.exports = (app, Collection, _prefix = '') => {
       }
 
       const instance = new Collection();
-      const data = instance.fromDataSnapshot(child);
+      const data = Collection.fromDataSnapshot(child);
       instance.fill(data);
 
       entities.push(instance);

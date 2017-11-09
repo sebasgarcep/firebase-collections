@@ -62,10 +62,6 @@ module.exports = class Collection {
     return this._proxy;
   }
 
-  fromDataSnapshot = (snapshot) => {
-    return snapshot.val();
-  }
-
   fill = (data) => {
     this._data = {};
     this.merge(data);
