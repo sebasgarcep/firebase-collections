@@ -31,25 +31,37 @@ module.exports = (app, Collection, _prefix = '') => {
   };
 
   Collection.find = async (id, prefix = _prefix) => {
-    const instance = new Collection();
+    let instance = null;
+
     const ref = Collection.getReferenceById(id, prefix);
     const data = await ref.once('value').then(instance.fromDataSnapshot);
-    instance.fill(data);
+
+    if (data !== null) {
+      instance = new Collection();
+      instance.fill(data);
+    }
+
     return instance;
   };
 
   Collection.findBy = async (key, value, prefix = _prefix) => {
-    const instance = new Collection();
+    let instance = null;
 
     let ref;
     ref = Collection.getReference(prefix);
     ref = ref.orderByChild(key);
     ref = ref.equalTo(value);
+    ref = ref.limitToFirst(1);
 
     const snapshot = await ref.once('value');
     snapshot.forEach((child) => {
-      const data = instance.fromDataSnapshot(child.val());
-      instance.fill(data);
+      const data = instance.fromDataSnapshot(child);
+
+      if (data !== null) {
+        instance = new Collection();
+        instance.fill(data);
+      }
+
       return true;
     });
 
@@ -74,7 +86,7 @@ module.exports = (app, Collection, _prefix = '') => {
       }
 
       const instance = new Collection();
-      const data = instance.fromDataSnapshot(child.val());
+      const data = instance.fromDataSnapshot(child);
       instance.fill(data);
 
       entities.push(instance);

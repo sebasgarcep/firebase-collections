@@ -1,6 +1,6 @@
 {
   "name": "firebase-collections",
-  "version": "0.1.2",
+  "version": "0.1.3",
   "description": "Basic ORM for Firebase",
   "main": "lib/index.js",
   "author": "Sebastian Garrido",
