@@ -33,4 +33,15 @@ module.exports = class Relationship {
 
     return Promise.all(keys.map(this._RecipientCollection.find));
   }
+
+  find = async (id) => {
+    const isRelated = await this._admin.database()
+      .ref(`${this._tableName}/${this._target.id}`)
+      .once('value')
+      .then(snapshot => snapshot.val());
+
+    if (!isRelated) return null;
+
+    return this._RecipientCollection.find(id);
+  }
 };
